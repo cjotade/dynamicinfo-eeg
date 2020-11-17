@@ -32,7 +32,7 @@ def filter_band_to_array(raw_edf: RawEDF, band: Optional[Union[str, List]] = 'al
     else:
         l_freq, h_freq  = BANDS.get(band.lower(), (None, None))
     
-    if (not h_freq) or (not l_freq):
+    if (not h_freq) and (not l_freq):
         logger.info(f"Check your band={band}, not in filter_bands={BANDS.keys()}")
         return raw_edf.get_data()
     
@@ -55,21 +55,25 @@ def filter_band_to_raw(raw_edf: RawEDF, band: Optional[Union[str, List]] = 'alph
     else:
         l_freq, h_freq  = BANDS.get(band.lower(), (None, None))
     
-    if (not h_freq) or (not l_freq):
+    if (not h_freq) and (not l_freq):
         logger.info(f"Check your band={band}, not in filter_bands={BANDS.keys()}")
         return raw_edf.get_data()
     
     return raw_edf.filter(l_freq=l_freq, h_freq=h_freq)
 
-def butter_bandpass(lowcut, highcut, fs, order=2):
+def butter_bandpass(lowcut: float, highcut: float, fs: float, order: int = 2):
     nyq = 0.5 * fs
     low = lowcut / nyq
     high = highcut / nyq
     b, a = butter(order, [low, high], btype='band')
     return b, a
 
-def butter_bandpass_filter(data, lowcut, highcut, fs, order=2):
-    b, a = butter_bandpass(lowcut, highcut, fs, order=order)
+def butter_bandpass_filter(data: List, band: Union[str, List], fs: float, order: int = 2):
+    if isinstance(band, list):
+        l_freq, h_freq = band    
+    else:
+        l_freq, h_freq  = BANDS.get(band.lower(), (None, None))
+    b, a = butter_bandpass(l_freq, h_freq, fs, order=order)
     y = lfilter(b, a, data)
     return y
 
@@ -78,7 +82,7 @@ def create_windows(raw_edf: RawEDF, time: Optional[int] = 5, band: str = 'alpha'
     Return data filtered by band.
     """
     # Filter all data by band
-    all_data = filter_band(raw_edf, band)
+    all_data = filter_band_to_array(raw_edf, band)
     # Creating windows
     n_samples = int(raw_edf.info['sfreq']*time)
     n_windows = int(all_data.shape[-1]/n_samples)
