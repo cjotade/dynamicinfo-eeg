@@ -2,6 +2,7 @@ from .filters import filter_band_to_array
 from .filters import filter_band_to_raw
 from .filters import butter_bandpass_filter
 from .filters import create_windows
+from .filters import eliminate_blink_corr_electrodes
 
 from .re_referencing import rref_remove
 from .re_referencing import rref_average

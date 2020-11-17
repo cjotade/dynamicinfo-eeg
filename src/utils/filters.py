@@ -89,3 +89,8 @@ def create_windows(raw_edf: RawEDF, time: Optional[int] = 5, band: str = 'alpha'
     data_windows = np.array([all_data[:, (i_window*n_samples):((i_window+1)*n_samples)] 
                     for i_window in range(n_windows)])
     return data_windows, all_data
+
+def eliminate_blink_corr_electrodes(corr_matrix: List, th: float = 0.6):
+    corr_s_diag = corr_matrix - np.diag(np.diag(corr_matrix)) # zero in diagonal
+    to_eliminate = np.where(corr_s_diag[0] >= th)[0] # find electrodes 'e' with corr(e, ocular_virtual) >= th
+    return to_eliminate - 1
