@@ -104,7 +104,7 @@ def eliminate_blink_corr_electrodes(corr_matrix: List, th: float = 0.6):
     Return indexes for deletting the channels that are high correlated (by threshold) with the first component of corr_matrix.
     Usually first component of corr_matrix is the mean of Fp1 and Fp2 EEG channels.
     """
-    corr_s_diag = corr_matrix - np.eye(corr_matrix.shape)
+    corr_s_diag = corr_matrix - np.eye(len(corr_matrix))
     # find electrodes 'e' with corr(e, ocular_virtual) >= th
     to_eliminate = np.where(corr_s_diag[0] >= th)[0] - 1 
     return to_eliminate
