@@ -18,8 +18,8 @@ BANDS = {
     "theta": [4.5, 7.5]
 }
 
-def filter_band_to_array(raw_edf: RawEDF, band: Optional[Union[str, List]] = 'alpha', verbose: Optional[bool] = False) -> List:
-    """mpy as nps
+def filter_band_raw_to_array(raw_edf: RawEDF, band: Optional[Union[str, List]] = 'alpha', verbose: Optional[bool] = False) -> List:
+    """
     Method description.
     """
     
@@ -45,7 +45,7 @@ def filter_band_to_array(raw_edf: RawEDF, band: Optional[Union[str, List]] = 'al
         verbose=verbose
     )
 
-def filter_band_to_raw(raw_edf: RawEDF, band: Optional[Union[str, List]] = 'alpha') -> RawEDF:
+def filter_band_raw_to_raw(raw_edf: RawEDF, band: Optional[Union[str, List]] = 'alpha') -> RawEDF:
     if not band:
         logger.info(f"Please use a band in filter_bands={BANDS.keys()}")
         return raw_edf.get_data()
@@ -68,7 +68,7 @@ def butter_bandpass(lowcut: float, highcut: float, fs: float, order: int = 2):
     b, a = butter(order, [low, high], btype='band')
     return b, a
 
-def butter_bandpass_filter(data: List, band: Union[str, List], fs: float, order: int = 2):
+def filter_band_array_to_array(data: List, band: Union[str, List], fs: float, order: int = 2):
     if isinstance(band, list):
         l_freq, h_freq = band    
     else:
@@ -82,7 +82,7 @@ def create_windows(raw_edf: RawEDF, time: Optional[int] = 5, band: str = 'alpha'
     Return data filtered by band.
     """
     # Filter all data by band
-    all_data = filter_band_to_array(raw_edf, band)
+    all_data = filter_band_raw_to_array(raw_edf, band)
     # Creating windows
     n_samples = int(raw_edf.info['sfreq']*time)
     n_windows = int(all_data.shape[-1]/n_samples)

@@ -1,6 +1,6 @@
-from .filters import filter_band_to_array
-from .filters import filter_band_to_raw
-from .filters import butter_bandpass_filter
+from .filters import filter_band_array_to_array
+from .filters import filter_band_raw_to_array
+from .filters import filter_band_raw_to_raw
 from .filters import create_windows
 from .filters import eliminate_blink_corr_electrodes
 
