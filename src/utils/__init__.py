@@ -8,5 +8,6 @@ from .re_referencing import rref_remove
 from .re_referencing import rref_average
 from .re_referencing import rref_CSD
 from .re_referencing import rref_REST
+from .re_referencing import create_virtual_channel
 
 from .read_data import read_data
