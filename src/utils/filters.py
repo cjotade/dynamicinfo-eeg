@@ -20,7 +20,7 @@ BANDS = {
 
 def filter_band_raw_to_array(raw_edf: RawEDF, band: Optional[Union[str, List]] = 'alpha', verbose: Optional[bool] = False) -> List:
     """
-    Method description.
+    Filter butter by band which receives a RawEDF object and return a numpy ndarray.
     """
     
     if not band:
@@ -46,6 +46,9 @@ def filter_band_raw_to_array(raw_edf: RawEDF, band: Optional[Union[str, List]] =
     )
 
 def filter_band_raw_to_raw(raw_edf: RawEDF, band: Optional[Union[str, List]] = 'alpha') -> RawEDF:
+    """
+    Filter butter by band which receives a RawEDF object and return a RawEDF object.
+    """
     if not band:
         logger.info(f"Please use a band in filter_bands={BANDS.keys()}")
         return raw_edf.get_data()
@@ -62,6 +65,9 @@ def filter_band_raw_to_raw(raw_edf: RawEDF, band: Optional[Union[str, List]] = '
     return raw_edf.filter(l_freq=l_freq, h_freq=h_freq)
 
 def butter_bandpass(lowcut: float, highcut: float, fs: float, order: int = 2):
+    """
+    Butter bandpass.
+    """
     nyq = 0.5 * fs
     low = lowcut / nyq
     high = highcut / nyq
@@ -69,6 +75,9 @@ def butter_bandpass(lowcut: float, highcut: float, fs: float, order: int = 2):
     return b, a
 
 def filter_band_array_to_array(data: List, band: Union[str, List], fs: float, order: int = 2):
+    """
+    Filter butter by band which receives a numpy ndarray and return a numpy ndarray.
+    """
     if isinstance(band, list):
         l_freq, h_freq = band    
     else:
@@ -91,6 +100,11 @@ def create_windows(raw_edf: RawEDF, time: Optional[int] = 5, band: str = 'alpha'
     return data_windows, all_data
 
 def eliminate_blink_corr_electrodes(corr_matrix: List, th: float = 0.6):
-    corr_s_diag = corr_matrix - np.diag(np.diag(corr_matrix)) # zero in diagonal
-    to_eliminate = np.where(corr_s_diag[0] >= th)[0] # find electrodes 'e' with corr(e, ocular_virtual) >= th
-    return to_eliminate - 1
+    """
+    Return indexes for deletting the channels that are high correlated (by threshold) with the first component of corr_matrix.
+    Usually first component of corr_matrix is the mean of Fp1 and Fp2 EEG channels.
+    """
+    corr_s_diag = corr_matrix - np.eye(corr_matrix.shape)
+    # find electrodes 'e' with corr(e, ocular_virtual) >= th
+    to_eliminate = np.where(corr_s_diag[0] >= th)[0] - 1 
+    return to_eliminate
