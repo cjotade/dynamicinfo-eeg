@@ -111,15 +111,18 @@ def eliminate_blink_corr_electrodes(corr_matrix: List, threshold: float = 0.6):
     to_eliminate = np.where(corr_s_diag[0] >= threshold)[0] - 1 
     return to_eliminate
 
-def create_windows(raw_edf: RawEDF, time: Optional[int] = 5, band: str = 'alpha') -> Tuple[List, List]:
+def create_windows(raw_edf: RawEDF, time: Optional[int] = 5, band: str = 'alpha') -> Tuple[List, List, List, List]:
     """
     Return data filtered by band.
     """
     # Filter all data by band
     all_data = filter_band_raw_to_array(raw_edf, band)
+    all_data_not_filt = filter_band_raw_to_array(raw_edf, [0.1, 100])
     # Creating windows
     n_samples = int(raw_edf.info['sfreq']*time)
     n_windows = int(all_data.shape[-1]/n_samples)
     data_windows = np.array([all_data[:, (i_window*n_samples):((i_window+1)*n_samples)] 
                     for i_window in range(n_windows)])
-    return data_windows, all_data
+    data_windows_not_filt = np.array([all_data_not_filt[:, (i_window*n_samples):((i_window+1)*n_samples)] 
+                    for i_window in range(n_windows)])
+    return data_windows, all_data, data_windows_not_filt, all_data_not_filt
