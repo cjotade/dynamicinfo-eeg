@@ -18,11 +18,11 @@ BANDS = {
     "theta": [4.5, 7.5]
 }
 
-def filter_band_raw_to_array(raw_edf: RawEDF, band: Optional[Union[str, List]] = 'alpha', verbose: Optional[bool] = False) -> List:
+def filter_band_raw_to_array(raw: RawEDF, band: Optional[Union[str, List]] = 'alpha', verbose: Optional[bool] = False) -> List:
     """
     Filter butter by band which receives a RawEDF object and return a numpy ndarray.
     """
-    
+    raw_edf = raw.copy()
     if not band:
         logger.info(f"Please use a band in filter_bands={BANDS.keys()}")
         return raw_edf.get_data()
@@ -45,10 +45,11 @@ def filter_band_raw_to_array(raw_edf: RawEDF, band: Optional[Union[str, List]] =
         verbose=verbose
     )
 
-def filter_band_raw_to_raw(raw_edf: RawEDF, band: Optional[Union[str, List]] = 'alpha') -> RawEDF:
+def filter_band_raw_to_raw(raw: RawEDF, band: Optional[Union[str, List]] = 'alpha') -> RawEDF:
     """
     Filter butter by band which receives a RawEDF object and return a RawEDF object.
     """
+    raw_edf = raw.copy()
     if not band:
         logger.info(f"Please use a band in filter_bands={BANDS.keys()}")
         return raw_edf.get_data()
@@ -86,10 +87,11 @@ def filter_band_array_to_array(data: List, band: Union[str, List], fs: float, or
     y = lfilter(b, a, data)
     return y
 
-def create_windows(raw_edf: RawEDF, time: Optional[int] = 5, band: str = 'alpha') -> Tuple[List, List]:
+def create_windows(raw: RawEDF, time: Optional[int] = 5, band: str = 'alpha') -> Tuple[List, List]:
     """
     Return data filtered by band.
     """
+    raw_edf = raw.copy()
     # Filter all data by band
     all_data = filter_band_raw_to_array(raw_edf, band)
     # Creating windows
@@ -108,3 +110,16 @@ def eliminate_blink_corr_electrodes(corr_matrix: List, threshold: float = 0.6):
     # find electrodes 'e' with corr(e, ocular_virtual) >= th
     to_eliminate = np.where(corr_s_diag[0] >= threshold)[0] - 1 
     return to_eliminate
+
+def create_windows(raw_edf: RawEDF, time: Optional[int] = 5, band: str = 'alpha') -> Tuple[List, List]:
+    """
+    Return data filtered by band.
+    """
+    # Filter all data by band
+    all_data = filter_band_raw_to_array(raw_edf, band)
+    # Creating windows
+    n_samples = int(raw_edf.info['sfreq']*time)
+    n_windows = int(all_data.shape[-1]/n_samples)
+    data_windows = np.array([all_data[:, (i_window*n_samples):((i_window+1)*n_samples)] 
+                    for i_window in range(n_windows)])
+    return data_windows, all_data
