@@ -1,13 +1,13 @@
-import numpy as np
 from typing import Callable, Dict, List, Optional, Tuple, Union
 
 import mne
+import numpy as np
+from idtxl.active_information_storage import ActiveInformationStorage
+from idtxl.data import Data
+from idtxl.multivariate_te import MultivariateTE
+from idtxl.results import ResultsNetworkInference, ResultsSingleProcessAnalysis
 from mne.io.edf.edf import RawEDF
 
-from idtxl.active_information_storage import ActiveInformationStorage
-from idtxl.multivariate_te import MultivariateTE
-from idtxl.results import ResultsSingleProcessAnalysis, ResultsNetworkInference
-from idtxl.data import Data
 
 def analyse_network_by_metric(
     data_window: List, 
