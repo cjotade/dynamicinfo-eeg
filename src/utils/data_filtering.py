@@ -51,7 +51,7 @@ def filter_band_raw_to_raw(raw: RawEDF, band: Optional[Union[str, List]] = "alph
     raw_edf = raw.copy()
     if not band:
         logger.info(f"Please use a band in filter_bands={BANDS.keys()}")
-        return raw_edf.get_data()
+        return raw_edf
     
     if isinstance(band, list):
         l_freq, h_freq = band    
@@ -60,7 +60,7 @@ def filter_band_raw_to_raw(raw: RawEDF, band: Optional[Union[str, List]] = "alph
     
     if (not h_freq) and (not l_freq):
         logger.info(f"Check your band={band}, not in filter_bands={BANDS.keys()}")
-        return raw_edf.get_data()
+        return raw_edf
     
     return raw_edf.filter(l_freq=l_freq, h_freq=h_freq)
 
@@ -115,7 +115,7 @@ def create_windows(raw: RawEDF, time: Optional[int] = 5, band: str = 'alpha') ->
 
 def clean_windows_artifacts(raw: RawEDF, window_time: Optional[int] = 10, band: Optional[Union[str, List]] = "alpha", std_threshold: Optional[float] = 0.6, rref_fn: Optional[Callable] = None):
     """
-    Create windows and then clean artifacts by threshold. 
+    Create windows and then clean artifacts by threshold. Filter in alpha and recognize artifacts in O2 and O1 channels.
     """
     raw_open_eyes = raw.copy()
     # Create Windows
