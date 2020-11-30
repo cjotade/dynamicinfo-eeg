@@ -103,7 +103,7 @@ def create_windows(raw: RawEDF, time: Optional[int] = 5, band: str = 'alpha') ->
     raw_edf = raw.copy()
     # Filter all data by band
     all_data = filter_band_raw_to_array(raw_edf, band)
-    all_data_not_filt = filter_band_raw_to_array(raw_edf, [0.1, 100])
+    all_data_not_filt = filter_band_raw_to_array(raw_edf, None)
     # Creating windows
     n_samples = int(raw_edf.info['sfreq']*time)
     n_windows = int(all_data.shape[-1]/n_samples)
