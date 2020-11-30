@@ -17,7 +17,7 @@ BANDS = {
     "theta": [4.5, 7.5]
 }
 
-def filter_band_raw_to_array(raw: RawEDF, band: Optional[Union[str, List]] = 'alpha', verbose: Optional[bool] = False) -> List:
+def filter_band_raw_to_array(raw: RawEDF, band: Optional[Union[str, List]] = "alpha", verbose: Optional[bool] = False) -> List:
     """
     Filter butter by band which receives a RawEDF object and return a numpy ndarray.
     """
@@ -44,7 +44,7 @@ def filter_band_raw_to_array(raw: RawEDF, band: Optional[Union[str, List]] = 'al
         verbose=verbose
     )
 
-def filter_band_raw_to_raw(raw: RawEDF, band: Optional[Union[str, List]] = 'alpha') -> RawEDF:
+def filter_band_raw_to_raw(raw: RawEDF, band: Optional[Union[str, List]] = "alpha") -> RawEDF:
     """
     Filter butter by band which receives a RawEDF object and return a RawEDF object.
     """
@@ -113,16 +113,16 @@ def create_windows(raw: RawEDF, time: Optional[int] = 5, band: str = 'alpha') ->
                     for i_window in range(n_windows)])
     return data_windows, all_data, data_windows_not_filt, all_data_not_filt
 
-def clean_windows_artifacts(raw: RawEDF, window_time: Optional[int] = 10, std_threshold: Optional[float] = 0.6, rref_fn: Optional[Callable] = None):
+def clean_windows_artifacts(raw: RawEDF, window_time: Optional[int] = 10, band: Optional[Union[str, List]] = "alpha", std_threshold: Optional[float] = 0.6, rref_fn: Optional[Callable] = None):
     """
     Create windows and then clean artifacts by threshold. 
     """
     raw_open_eyes = raw.copy()
     # Create Windows
     if rref_fn is not None:
-        windows, all_data, windows_not_filt, _ = create_windows(rref_fn(raw_open_eyes), time=window_time)
+        windows, all_data, windows_not_filt, _ = create_windows(rref_fn(raw_open_eyes), time=window_time, band=band)
     else: 
-        windows, all_data, windows_not_filt, _ = create_windows(raw_open_eyes, time=window_time)
+        windows, all_data, windows_not_filt, _ = create_windows(raw_open_eyes, time=window_time, band=band)
     # Clean artifacts
     windows_cls = [] # windows with close eyes
     rejected = [] # windows rejected idxs
