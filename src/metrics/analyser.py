@@ -14,15 +14,15 @@ def analyse_network_by_metric(
     channels: Union[int, List[int]],
     metric: str,
     target: Optional[int] = None,
-    sources: Optional[Union[List[int], int]] = None,
     **settings: Optional[Dict[str, float]]) -> Union[ResultsSingleProcessAnalysis, ResultsNetworkInference]:
     """
     Analyse nentwork for metrics calculation.
     """
+    from utils.data_filtering import get_sources
     # Configure settings
     if not settings:
         settings = {
-                'cmi_estimator':  'JidtKraskovCMI', #JidtGaussianCMI
+                'cmi_estimator':  'JidtGaussianCMI', #JidtGaussianCMI, JidtKraskovCMI
             }
         if metric == "AIS":
             settings.update({
@@ -46,7 +46,8 @@ def analyse_network_by_metric(
     else:
         raise Exception('Metric parameter must be AIS or TE')
     # Return analysis and data filtered
-    if target or sources:
+    if target is not None:
+        sources = get_sources(channels, target)
         return network_analysis.analyse_network_single_target(settings=settings, data=data, target=target, sources=sources)
     else:
         return network_analysis.analyse_network(settings=settings, data=data)
