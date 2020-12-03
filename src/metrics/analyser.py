@@ -48,6 +48,6 @@ def analyse_network_by_metric(
     # Return analysis and data filtered
     if target is not None:
         sources = get_sources(channels, target)
-        return network_analysis.analyse_network_single_target(settings=settings, data=data, target=target, sources=sources)
+        return network_analysis.analyse_single_target(settings=settings, data=data, target=target, sources=sources)
     else:
         return network_analysis.analyse_network(settings=settings, data=data)
