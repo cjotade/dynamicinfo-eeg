@@ -8,6 +8,8 @@ from .data_filtering import eliminate_blink_corr_electrodes
 from .data_filtering import create_windows
 from .data_filtering import clean_windows_artifacts
 from .data_filtering import reconstruct_signal
+from .data_filtering import get_sources
+from .data_filtering import preprocess_data
 
 from .re_referencing import rref_remove
 from .re_referencing import rref_average

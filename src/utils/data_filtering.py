@@ -156,3 +156,40 @@ def reconstruct_signal(raw: RawEDF, threshold: float, ch_names: Optional[List] =
     # Reconstruct signal and remove selected components from the signal
     ica.apply(reconst_raw, exclude=to_eliminate) 
     return reconst_raw, ica, to_eliminate
+
+def get_sources(channels: List, target: int):
+    """
+    Get sources not equal to target from channels list.
+    """
+    sources = []
+    for source in channels:
+        if source != target:
+            sources.append(int(source))
+    return sources
+
+def preprocess_data(filepath: str, 
+                    reconst_threshold: float, 
+                    window_time: int, 
+                    clean_threshold: float, 
+                    rref_fn: Optional[Callable] = None):
+    """
+    Preprocess data by reading, filtering, reconstruct signal using ICA and cleaning by threshold.
+    """
+    from .read_data import read_data
+    # Load data, filter on 0.1-100 [Hz] and rref REST
+    raw = read_data(filepath)
+    raw_filtered = filter_band_raw_to_raw(raw, [0.1, 100])
+    
+    # Reconstruct with raw_filtered (not re-ref)
+    if reconst_threshold is not None:
+        reconst_raw, ica, eliminated_comps = reconstruct_signal(raw_filtered, reconst_threshold, ch_names=["Fp1", "Fp2"]) #[ 0  1  5  6 13 16]
+    else:
+        reconst_raw = raw_filtered.copy()
+
+    # Cleaning
+    data_windows, rejected = clean_windows_artifacts(reconst_raw, 
+                                                     window_time=window_time, 
+                                                     std_threshold=clean_threshold, 
+                                                     rref_fn=rref_fn
+                                                    )
+    return data_windows
