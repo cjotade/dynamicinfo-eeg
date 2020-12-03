@@ -12,7 +12,9 @@ from mne.io.edf.edf import RawEDF
 def analyse_network_by_metric(
     data_window: List, 
     channels: Union[int, List[int]],
-    metric: str, 
+    metric: str,
+    target: Optional[int] = None,
+    sources: Optional[Union[List[int], int]] = None,
     **settings: Optional[Dict[str, float]]) -> Union[ResultsSingleProcessAnalysis, ResultsNetworkInference]:
     """
     Analyse nentwork for metrics calculation.
@@ -44,4 +46,7 @@ def analyse_network_by_metric(
     else:
         raise Exception('Metric parameter must be AIS or TE')
     # Return analysis and data filtered
-    return network_analysis.analyse_network(settings=settings, data=data)
+    if target or sources:
+        return network_analysis.analyse_network_single_target(settings=settings, data=data, target=target, sources=sources)
+    else:
+        return network_analysis.analyse_network(settings=settings, data=data)
